@@ -41,9 +41,7 @@ def find_files(suffix=".c", path="testdir"):
 class TestFindFiles(unittest.TestCase):
     def test_find_gitkeep(self):
         assert find_files(suffix=".gitkeep") == [
-            "subdir4/.gitkeep",
-            "subdir2/.gitkeep"
-        ]
+            "subdir4/.gitkeep", "subdir2/.gitkeep"]
 
     def test_find_c(self):
         assert find_files(suffix=".c") == [
