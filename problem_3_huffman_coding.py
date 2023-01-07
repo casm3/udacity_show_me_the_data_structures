@@ -31,9 +31,26 @@ def calculate_codes(node: Node, encoded_data='', codes=dict()):
 
 def huffman_encoding(data: str):
     letters_count = Counter(data)
+
     letters: list[str] = letters_count.keys()
 
     nodes = [Node(letters_count.get(letter), letter) for letter in letters]
+
+    if len(nodes) == 1:
+        left = nodes[0]
+
+        left.code = 1
+        nodes.append(
+            Node(
+                left.letter_count,
+                left.letter,
+                left,
+            )
+        )
+
+        huffman_encoding = calculate_codes(nodes[0])
+        encoded_output = [huffman_encoding[letter] for letter in data]
+        return "".join(encoded_output), nodes[0]
 
     while len(nodes) > 1:
         nodes = sorted(nodes, key=lambda x: x.letter_count)
@@ -58,7 +75,10 @@ def huffman_encoding(data: str):
     return "".join(encoded_output), nodes[0]
 
 
-def huffman_decoding(data: str, tree):
+def huffman_decoding(data: str, tree: Node):
+    if "0" not in data:
+        return tree.letter_count * tree.letter
+
     root = tree
     decoded_output = []
     for boolean in data:
@@ -110,3 +130,6 @@ assert huffman_decoding(encoded_data, tree) == huffman
 
 encoded_data, tree = huffman_encoding(source)
 assert huffman_decoding(encoded_data, tree) == source
+
+encoded_data, tree = huffman_encoding("AAAA")
+assert huffman_decoding(encoded_data, tree) == "AAAA"

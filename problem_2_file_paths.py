@@ -19,6 +19,14 @@ def find_files(suffix=".c", path="testdir"):
     Returns:
        a list of paths
     """
+    try:
+        os.listdir(path)
+    except FileNotFoundError:
+        return []
+    except NotADirectoryError:
+        if os.path.isfile(path):
+            return [path]
+
     queue_repository = deque(os.listdir(path))
     list_of_elements = []
     while len(queue_repository):
@@ -28,8 +36,8 @@ def find_files(suffix=".c", path="testdir"):
         elif "." in popped_element:
             pass
         else:
-            for element in os.listdir(f"{path}/{popped_element}"):
-                queue_repository.append(f"{popped_element}/{element}")
+            for element in os.listdir(os.path.join(path, popped_element)):
+                queue_repository.append(os.path.join(popped_element, element))
     return list_of_elements
 
 
@@ -64,6 +72,14 @@ class TestFindFiles(unittest.TestCase):
 
     def test_folder(self):
         assert find_files(suffix="subdir4") == []
+
+    def test_no_folder(self):
+        assert find_files(path="nonpath") == []
+
+    def test_edge_case(self):
+        path = "../udacity_show_me_the_data_structures/problem_2_file_paths.py"
+        suffix = ".py"
+        assert len(find_files(suffix, path)) == 1
 
 
 if __name__ == "__main__":
